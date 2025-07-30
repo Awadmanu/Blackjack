@@ -1,6 +1,6 @@
 #BlackJack Cracker
 import random
-import bjfunctions as bjf  # type: ignore
+import bjfunctions as bjf 
 import os
 
 class Card:
@@ -56,9 +56,9 @@ class Deck:
 
 # Initialize game variables
 n_decks = 6 
-N_PLAYERS = 6
+N_PLAYERS = 1
 n_players = N_PLAYERS 
-n_games = 100
+n_games = 10000
 win_draw_loss = [0] * 3
 bot_place = random.randint(0, n_players - 1)  # Randomly select AI position
 balance = [1000] * n_players  # Starting balance for each player
@@ -87,16 +87,16 @@ for g in range(n_games):
     bets = [1] * n_players
     [table, game] = bjf.deal_cards(game, n_players)
     
-    
-    for p in range(n_players):
+    p = 0
+    while p < n_players:
         player_hand = table[p]
         dealer_card = table[n_players].cards[0]
         decision = 1 # Start with a hit decision
 
         while player_hand.get_sum() < 21 and decision != 0:
-            os.system('cls')
-            print(player_hand)
-            print(f"Dealer's visible card: {dealer_card}")
+            # os.system('cls')
+            # print(player_hand)
+            # print(f"Dealer's card value: {dealer_card.value}")
 
             decision = 1 # Default to hit
             if table[p].player_index == bot_place:
@@ -104,12 +104,13 @@ for g in range(n_games):
             else:
                 decision = bjf.decide_best_move(dealer_card, player_hand)
 
-            print(f"Decision: {decision}")
+            #print(f"Decision: {decision}")
             
             bets = bjf.update_bets(bets, decision, p)
             [table, game] = bjf.play_hand(game, table, decision, p)
             
             if decision == 2:
+                #print(player_hand)
                 decision = 0 # After doubling down, player stands automatically
             if decision == 3:
                 n_players += 1  # Increase player count for split
@@ -118,7 +119,10 @@ for g in range(n_games):
         if player_hand.get_sum() == 21 and len(player_hand.cards) == 2:
             bets[p] *= 1.5
         
+        #print(player_hand)
+
         total_hands += 1
+        p += 1
 
     # Dealer's turn
     dealer_hand = table[n_players]
@@ -137,7 +141,7 @@ for g in range(n_games):
 
 # Print final statistics after all games
 print(f"Balance after {total_hands} hands: {balance}")
-print(f"Final statistics: wins: {round(win_draw_loss[0] * 100/(total_hands), 2)}%   losses: {round(win_draw_loss[1] * 100/(total_hands), 2)}%   draws: {round(win_draw_loss[2] * 100/(total_hands),2)}%")
+print(f"Final statistics: wins: {round(win_draw_loss[0] * 100/(total_hands), 2)}%   draws: {round(win_draw_loss[1] * 100/(total_hands), 2)}%   losses: {round(win_draw_loss[2] * 100/(total_hands),2)}%")
             
             
 
